@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+server/data/messages.json
+server/test-message.json
+server/check-db.js
+server/db-error.log
+server/output.log
+.DS_Store
+*.log
