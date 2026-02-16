@@ -1,27 +1,50 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/use-auth';
 import { MessageSquare, Bell, Users, Calendar } from 'lucide-react';
-import { useEffect } from 'react';
-import { mockMessages } from '../data/mock-data';
+import { useEffect, useState } from 'react';
+import { Message } from '../data/mock-data';
 
 export function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) {
       navigate('/');
+      return;
     }
+
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch('http://localhost:5001/api/messages');
+        if (response.ok) {
+          const data = await response.json();
+          const userMessages = data
+            .filter((m: Message) => m.recipientId === user.id);
+          setMessages(userMessages);
+        }
+      } catch (error) {
+        console.error('Failed to fetch messages:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 5000);
+    return () => clearInterval(interval);
   }, [user, navigate]);
 
   if (!user) return null;
 
-  const unreadMessages = mockMessages.filter(m => !m.read && m.recipientId === user.id).length;
+  const unreadMessages = messages.filter(m => !m.read).length;
 
   const stats = [
     {
       title: 'Unread Messages',
-      value: unreadMessages,
+      value: loading ? '...' : unreadMessages,
       icon: MessageSquare,
       color: 'bg-blue-500',
       action: () => navigate('/messages'),

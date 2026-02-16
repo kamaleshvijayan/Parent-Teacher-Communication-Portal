@@ -6,7 +6,6 @@ import { Messages } from "./components/messages";
 import { Compose } from "./components/compose";
 import { Announcements } from "./components/announcements";
 import { Students } from "./components/students";
-import { NotFound } from "./components/not-found";
 
 export const router = createBrowserRouter([
   {
@@ -19,7 +18,6 @@ export const router = createBrowserRouter([
       { path: "compose", Component: Compose },
       { path: "announcements", Component: Announcements },
       { path: "students", Component: Students },
-      { path: "*", Component: NotFound },
     ],
   },
 ]);
